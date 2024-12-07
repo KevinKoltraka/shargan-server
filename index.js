@@ -27,22 +27,24 @@ const logger = winston.createLogger({
 // CORS configuration for production and development
 const corsOptions = {
   origin: [
-    process.env.FRONTEND_URL, // Use the FRONTEND_URL from the .env file
-    'https://shargan-consulting.netlify.app/' // Replace with your actual production front-end domain
+    process.env.FRONTEND_URL,
+    'https://shargan-consulting.netlify.app',  // Your front-end URL on Netlify
+    'http://localhost:5173'                    // Your local front-end URL (for development)
   ],
-  methods: ['GET', 'POST'], // Allowed HTTP methods
-  credentials: true, // Allow cookies or authorization headers if needed
+  methods: ['GET', 'POST'],                    // Allowed HTTP methods
+  allowedHeaders: ['Content-Type'],            // Allowed headers
+  credentials: true,                            // Allow credentials (cookies)
 };
 
 // Middleware
-app.use(cors(corsOptions)); // Apply the CORS middleware with specific options
-app.use(bodyParser.json()); // Parse JSON requests
+app.use(cors(corsOptions));  // Apply CORS middleware with options
+app.use(bodyParser.json());  // Middleware to parse JSON
 
 // Create a Nodemailer transporter for email functionality
 const transporter = nodemailer.createTransport({
-  service: 'gmail', // You can use any email service provider
+  service: 'gmail', // Use your email provider's service
   auth: {
-    user: process.env.EMAIL_USER, // your email
+    user: process.env.EMAIL_USER, // your email address
     pass: process.env.EMAIL_PASS, // your email password or App password
   },
 });
@@ -58,7 +60,7 @@ app.post('/send-email', async (req, res) => {
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
-    to: process.env.RECIPIENT_EMAIL, // where the email will be sent
+    to: process.env.RECIPIENT_EMAIL, // Recipient email address
     subject: 'New Contact Form Submission',
     text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
   };
@@ -72,6 +74,9 @@ app.post('/send-email', async (req, res) => {
     res.status(500).json({ error: 'Failed to send email. Please try again later.' });
   }
 });
+
+// Handle preflight OPTIONS requests
+app.options('*', cors(corsOptions));
 
 // Endpoint to check if the server is running
 app.get('/ping', (req, res) => {
