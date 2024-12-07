@@ -28,7 +28,7 @@ const logger = winston.createLogger({
 const corsOptions = {
   origin: [
     process.env.FRONTEND_URL, // Use the FRONTEND_URL from the .env file
-    'http://localhost:5173/' // Replace with your actual production front-end domain
+    'https://shargan-consulting.netlify.app/' // Replace with your actual production front-end domain
   ],
   methods: ['GET', 'POST'], // Allowed HTTP methods
   credentials: true, // Allow cookies or authorization headers if needed
