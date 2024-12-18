@@ -28,7 +28,7 @@ const logger = winston.createLogger({
 const corsOptions = {
   origin: [
     process.env.FRONTEND_URL,
-    'https://shargan-consulting.netlify.app',  // Your front-end URL on Netlify
+    'https://sharganconsulting.com/',  // Your front-end URL on Netlify
     'http://localhost:5173'                    // Your local front-end URL (for development)
   ],
   methods: ['GET', 'POST'],                    // Allowed HTTP methods
