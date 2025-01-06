@@ -1,4 +1,4 @@
-require("dotenv").config(); // To read environment variables from a .env file
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -27,32 +27,28 @@ const logger = winston.createLogger({
 // CORS configuration
 const corsOptions = {
   origin: [
-    process.env.FRONTEND_URL, // Your frontend URL from environment variables
-    "https://sharganconsulting.com", // Production frontend URL
-    "http://localhost:5173", // Local frontend URL for development
+    process.env.FRONTEND_URL,
+    "https://sharganconsulting.com",
+    "http://localhost:5173",
   ],
-  methods: ["GET", "POST", "OPTIONS"], // Allowed HTTP methods
-  allowedHeaders: ["Content-Type"], // Allowed headers
-  credentials: true, // Allow credentials (if needed)
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type"],
+  credentials: true,
 };
 
-// Middleware
-app.use(cors(corsOptions)); // Apply CORS middleware with options
-app.use(bodyParser.json()); // Middleware to parse JSON
-
-// Handle preflight OPTIONS requests
-app.options("*", cors(corsOptions)); // Explicitly handle OPTIONS requests
+app.use(cors(corsOptions));
+app.use(bodyParser.json());
 
 // Nodemailer transporter setup
 const transporter = nodemailer.createTransport({
-  service: "gmail", // Use your email provider's service
+  service: "gmail",
   auth: {
-    user: process.env.EMAIL_USER, // Your email address
-    pass: process.env.EMAIL_PASS, // Your email password or app password
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
-// POST endpoint to send email from the contact form
+// POST endpoint to send email
 app.post("/send-email", async (req, res) => {
   const { name, email, message } = req.body;
 
@@ -63,24 +59,22 @@ app.post("/send-email", async (req, res) => {
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
-    to: process.env.RECIPIENT_EMAIL, // Recipient email address
-    subject: "New Contact Form Submission",
+    to: process.env.RECIPIENT_EMAIL,
+    subject: `New Contact Form Submission from ${name}`,
     text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
   };
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    logger.info(`Email sent successfully: ${info.response}`);
+    logger.info(`Email sent: ${info.response}`);
     res.status(200).json({ message: "Email sent successfully!" });
   } catch (error) {
-    logger.error(`Error sending email: ${error.message}`);
-    res
-      .status(500)
-      .json({ error: "Failed to send email. Please try again later." });
+    logger.error(`Email send failed: ${error.message}`);
+    res.status(500).json({ error: "Failed to send email. Please try again." });
   }
 });
 
-// Health check endpoint
+// Health check
 app.get("/ping", (req, res) => {
   res.status(200).send("Server is up and running!");
 });
