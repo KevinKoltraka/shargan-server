@@ -26,16 +26,24 @@ const logger = winston.createLogger({
 
 // CORS configuration
 const corsOptions = {
-  origin: [
-    process.env.FRONTEND_URL,
-    "https://sharganconsulting.com",
-    "http://localhost:5173",
-  ],
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      process.env.FRONTEND_URL,
+      "https://sharganconsulting.com",
+      "http://localhost:5173",
+    ];
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type"],
   credentials: true,
 };
 
+app.use(cors());
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
